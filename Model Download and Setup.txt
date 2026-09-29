@@ -1,0 +1,199 @@
+## Model Download and Setup
+
+This project requires two pretrained model weights:
+
+* **YOLOv8 Nano:** `yolov8n.pt`
+* **SAM 2.1 Tiny:** `sam2.1_t.pt`
+
+### 1. Install Ultralytics
+
+Activate your Python environment and install Ultralytics:
+
+```bash
+pip install ultralytics
+```
+
+---
+
+### 2. Download YOLOv8
+
+The project uses the pretrained YOLOv8 Nano detection model:
+
+```text
+yolov8n.pt
+```
+
+Official YOLOv8 repository:
+
+https://github.com/ultralytics/yolov8
+
+Official YOLOv8 documentation:
+
+https://docs.ultralytics.com/models/yolov8/
+
+You can download the model manually or allow Ultralytics to download it automatically.
+
+#### Option A — Automatic Download
+
+Run:
+
+```bash
+python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
+```
+
+Ultralytics will download `yolov8n.pt` automatically if it is not already available.
+
+#### Option B — Manual Download
+
+Download:
+
+```text
+yolov8n.pt
+```
+
+from the official Ultralytics model assets.
+
+Place the downloaded file in the project directory:
+
+```text
+sam2_project/
+├── sam2_segmentation.py
+├── requirements.txt
+├── README.md
+├── yolov8n.pt
+└── sam2.1_t.pt
+```
+
+---
+
+### 3. Download SAM 2.1
+
+This project uses the **SAM 2.1 Tiny** checkpoint:
+
+```text
+sam2.1_t.pt
+```
+
+Official Ultralytics SAM 2 documentation:
+
+https://docs.ultralytics.com/models/sam-2/
+
+The available SAM 2.1 variants include:
+
+```text
+sam2.1_t.pt    # Tiny
+sam2.1_s.pt    # Small
+sam2.1_b.pt    # Base
+sam2.1_l.pt    # Large
+```
+
+For this project, use:
+
+```text
+sam2.1_t.pt
+```
+
+because it is the smallest variant and is more suitable for real-time experimentation on systems with limited GPU VRAM.
+
+#### Automatic Download
+
+You can allow Ultralytics to download the checkpoint automatically:
+
+```bash
+python -c "from ultralytics import SAM; SAM('sam2.1_t.pt')"
+```
+
+Alternatively, the main Python program will download the checkpoint when this line is executed:
+
+```python
+self.sam = SAM("sam2.1_t.pt")
+```
+
+---
+
+### 4. Verify the Model Files
+
+After downloading, verify that the project directory contains:
+
+```text
+sam2_project/
+│
+├── sam2_segmentation.py
+├── requirements.txt
+├── README.md
+│
+├── yolov8n.pt
+└── sam2.1_t.pt
+```
+
+Check using:
+
+```bash
+ls -lh *.pt
+```
+
+Expected output should contain:
+
+```text
+yolov8n.pt
+sam2.1_t.pt
+```
+
+---
+
+### 5. Update the Python Code
+
+Make sure the model initialization uses **SAM 2.1**:
+
+```python
+segmenter = AutomaticSAM2Segmenter(
+    sam_model="sam2.1_t.pt",
+    yolo_model="yolov8n.pt"
+)
+```
+
+Do not use:
+
+```python
+sam_model="sam2_t.pt"
+```
+
+if the project is specifically documented as **SAM 2.1**.
+
+---
+
+### 6. Run the Project
+
+After installing the requirements and obtaining the model weights:
+
+```bash
+python sam2_segmentation.py
+```
+
+The program will open the webcam and start in:
+
+```text
+AUTO mode
+```
+
+The processing pipeline is:
+
+```text
+Webcam
+   ↓
+YOLOv8n
+   ↓
+Object Detection
+   ↓
+Bounding Box Center Point
+   ↓
+SAM 2.1 Tiny
+   ↓
+Segmentation Mask
+   ↓
+Colored Overlay
+```
+
+Press `E` to switch to SAM 2.1 Everything Mode.
+
+Press `A` to return to YOLO + SAM 2.1 Auto Mode.
